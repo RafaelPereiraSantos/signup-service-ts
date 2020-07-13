@@ -1,23 +1,65 @@
-import { Controller, Post, Get, Req, Param, Body } from '@nestjs/common';
-import { AppService } from './app.service';
+import {
+  Controller,
+  Post,
+  Get,
+  Req,
+  Param,
+  Body,
+  HttpCode,
+  Query,
+  HttpStatus,
+  HttpException
+} from '@nestjs/common';
+
 import { Request } from 'express';
-import { IsEmail, IsNotEmpty } from 'class-validator';
-import {Expose, plainToClass} from "class-transformer";
+import { Expose, plainToClass } from "class-transformer";
 
-class CreateCatDto {
-  @Expose({ name: "full_name" })
-  fullName  : string;
-  age: number;
-  breed?: string;
-}
+import { AssociationService } from './associationService';
+import { Eligible } from './eligible';
 
-@Controller('cats')
+@Controller('/')
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly service: AssociationService) {}
 
-  @Post('all')
-  getHello(@Body() createCatDto: CreateCatDto): string {
-    console.log(createCatDto)
-    return this.appService.getHello();
+  @HttpCode(HttpStatus.CREATED)
+  @Post('associate')
+  postAssociate(@Body() eligibleParams: Eligible): Eligible {
+    const eligible = plainToClass(Eligible, eligibleParams)
+
+    if (eligible.noAssociationDataAvailable()) {
+      throw new HttpException(
+        'Required at least one parameter: email, personal document or token', HttpStatus.BAD_REQUEST
+      );
+    }
+
+    this.service.associate(eligible);
+    return eligible;
+  }
+
+  @HttpCode(HttpStatus.CREATED)
+  @Post('register')
+  postRegister(@Body() eligibleParams: Eligible): Eligible {
+    const eligible = plainToClass(Eligible, eligibleParams)
+
+    if (eligible.noRegisterDataAvailable()) {
+      throw new HttpException(
+        'Name, email and password are mandatory parameters!', HttpStatus.BAD_REQUEST
+      );
+    }
+
+    // call register service
+
+    return eligible;
+  }
+
+  @Get('eligiblity')
+  getEligiblity(
+    @Body() eligible: Eligible,
+    @Query('email') email
+  ): Eligible {
+
+    // call search service
+
+    return(eligible);
   }
 }
