@@ -26,6 +26,9 @@ export class AppController {
   async postAssociate(@Body() eligibleParams: Eligible): Promise<Object> {
     const eligible = plainToClass(Eligible, eligibleParams)
 
+
+    // TODO improve this check with a middleware or interceptor
+
     if (eligible.noAssociationDataAvailable()) {
       throw new HttpException(
         'Required at least one parameter: email, personal document or token', HttpStatus.BAD_REQUEST
@@ -46,7 +49,7 @@ export class AppController {
       );
     }
 
-    // call register service
+    // TODO implement a register service
 
     return serialize(eligible);
   }
@@ -57,14 +60,8 @@ export class AppController {
     @Query('email') email
   ): String {
 
-    // call search service
+    // TODO implement a search service
 
     return serialize(eligible);
-  }
-
-  @Post('post2')
-  postRegister2(@Body() eligibleParams: Eligible): Eligible {
-    const eligible = plainToClass(Eligible, eligibleParams)
-    return eligible;
   }
 }

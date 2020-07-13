@@ -8,6 +8,7 @@ import { EligibleCreatedEvent } from './eligibleCreatedEvent';
 export class Consumer {
 
   constructor(
+    // TODO move url to a dotenv
     private readonly url: String = 'amqp://localhost'
   ) {}
 
@@ -23,6 +24,9 @@ export class Consumer {
         this.parseMessage(message)
       )
     }
+
+    // TODO delete message after use
+    // TODO implement a retry/dead-letter system
 
     AmqpLib.connect(url, (error, connection) => {
       connection.createChannel((error, channel) => {

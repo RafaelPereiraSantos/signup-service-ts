@@ -7,6 +7,8 @@ import { Eligible } from './eligible';
 @Injectable()
 export class AssociationService {
 
+  // TODO move url to a dotenv
+
   private readonly associationHost = "http://localhost:3000/post2"
 
   async associate(eligible: Eligible) {

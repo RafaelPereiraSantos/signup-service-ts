@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { Consumer } from './consumer';
 import { CaseConvertInterceptor } from './caseConvertInterceptor';
 
+// TODO create tests for all of this
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -12,6 +13,8 @@ async function bootstrap() {
 
   const consumer: Consumer = new Consumer();
   consumer.up();
+
+  // TODO move this port to a dotenv
 
   await app.listen(3000);
 }
