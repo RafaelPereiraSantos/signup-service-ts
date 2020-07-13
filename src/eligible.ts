@@ -42,6 +42,14 @@ export class Eligible {
              this.password === undefined;
   }
 
+  associationDataJson(): Object {
+    return {
+      email_address: this.emailAddress,
+      token: this.token,
+      personal_document: this.personalDocument
+    }
+  }
+
   static fromEvent(event: EligibleCreatedEvent): Eligible {
     return new Eligible(
         event.name,

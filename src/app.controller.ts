@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 
 import { Request } from 'express';
-import { Expose, plainToClass } from "class-transformer";
+import { Expose, plainToClass, serialize } from "class-transformer";
 
 import { AssociationService } from './associationService';
 import { Eligible } from './eligible';
@@ -23,7 +23,7 @@ export class AppController {
 
   @HttpCode(HttpStatus.CREATED)
   @Post('associate')
-  postAssociate(@Body() eligibleParams: Eligible): Eligible {
+  async postAssociate(@Body() eligibleParams: Eligible): Promise<Object> {
     const eligible = plainToClass(Eligible, eligibleParams)
 
     if (eligible.noAssociationDataAvailable()) {
@@ -31,14 +31,13 @@ export class AppController {
         'Required at least one parameter: email, personal document or token', HttpStatus.BAD_REQUEST
       );
     }
-
-    this.service.associate(eligible);
-    return eligible;
+    const response = await this.service.associate(eligible);
+    return JSON.stringify(response)
   }
 
   @HttpCode(HttpStatus.CREATED)
   @Post('register')
-  postRegister(@Body() eligibleParams: Eligible): Eligible {
+  postRegister(@Body() eligibleParams: Eligible): String {
     const eligible = plainToClass(Eligible, eligibleParams)
 
     if (eligible.noRegisterDataAvailable()) {
@@ -49,17 +48,23 @@ export class AppController {
 
     // call register service
 
-    return eligible;
+    return serialize(eligible);
   }
 
   @Get('eligiblity')
   getEligiblity(
     @Body() eligible: Eligible,
     @Query('email') email
-  ): Eligible {
+  ): String {
 
     // call search service
 
-    return(eligible);
+    return serialize(eligible);
+  }
+
+  @Post('post2')
+  postRegister2(@Body() eligibleParams: Eligible): Eligible {
+    const eligible = plainToClass(Eligible, eligibleParams)
+    return eligible;
   }
 }
