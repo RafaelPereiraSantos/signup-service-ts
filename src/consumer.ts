@@ -40,9 +40,11 @@ export class Consumer {
         console.log("I'm alive!", queue);
 
         channel.consume(queue, (msg) => {
-          processMessage(msg.content)
+          console.log("Message received");
+          processMessage(msg.content);
+          // channel.ack(msg);
         }, {
-            noAck: false
+            noAck: true
         });
       });
     });

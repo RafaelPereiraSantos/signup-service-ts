@@ -15,17 +15,21 @@ import { Request } from 'express';
 import { Expose, plainToClass, serialize } from "class-transformer";
 
 import { AssociationService } from './associationService';
+import { RegistrationService } from './registrationService';
 import { Eligible } from './eligible';
+import { EndUserRegister } from './endUserRegister';
 
 @Controller('/')
 export class AppController {
-  constructor(private readonly service: AssociationService) {}
+  constructor(
+    private readonly associationService: AssociationService,
+    private readonly registerService: RegistrationService
+  ) {}
 
   @HttpCode(HttpStatus.CREATED)
   @Post('associate')
   async postAssociate(@Body() eligibleParams: Eligible): Promise<Object> {
     const eligible = plainToClass(Eligible, eligibleParams)
-
 
     // TODO improve this check with a middleware or interceptor
 
@@ -34,14 +38,14 @@ export class AppController {
         'Required at least one parameter: email, personal document or token', HttpStatus.BAD_REQUEST
       );
     }
-    const response = await this.service.associate(eligible);
+    const response = await this.associationService.associate(eligible);
     return JSON.stringify(response)
   }
 
   @HttpCode(HttpStatus.CREATED)
   @Post('register')
-  postRegister(@Body() eligibleParams: Eligible): String {
-    const eligible = plainToClass(Eligible, eligibleParams)
+  postRegister(@Body() eligibleParams: EndUserRegister): String {
+    const eligible = plainToClass(EndUserRegister, eligibleParams)
 
     if (eligible.noRegisterDataAvailable()) {
       throw new HttpException(
@@ -49,9 +53,11 @@ export class AppController {
       );
     }
 
+    registerService.register()
+
     // TODO implement a register service
 
-    return serialize(eligible);
+    return serialize(eligible.registerDataJson());
   }
 
   @Get('eligiblity')

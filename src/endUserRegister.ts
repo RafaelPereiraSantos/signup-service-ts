@@ -2,55 +2,45 @@ import { Expose } from "class-transformer";
 import { EligibleCreatedEvent } from './eligibleCreatedEvent';
 import { IsEmail, IsNotEmpty } from 'class-validator';
 
-export class Eligible {
+export class EndUserRegister {
 
+  @IsNotEmpty()
   name?: String;
 
+  @IsNotEmpty()
   @Expose({ name: "email_address" })
   emailAddress?: String;
 
-  token?: String;
+  @IsNotEmpty()
+  password?: String;
 
   @Expose({ name: "personal_document" })
   personalDocument?: String;
 
-  @IsNotEmpty()
-  @Expose({ name: "company_id" })
-  companyId?: number
-
   constructor(
     name?: String,
     emailAddress?: String,
-    token?: String,
+    password?: String,
     personalDocument?: String
   ) {
     this.name = name;
     this.emailAddress = emailAddress;
-    this.token = token;
+    this.password = password;
     this.personalDocument = personalDocument;
   }
 
-  noAssociationDataAvailable() {
-    return this.emailAddress === undefined &&
-             this.token === undefined &&
-             this.personalDocument === undefined;
+  noRegisterDataAvailable() {
+    return this.name === undefined ||
+             this.emailAddress === undefined ||
+             this.password === undefined;
   }
 
-  associationDataJson(): Object {
+  registerDataJson(): Object {
     return {
+      name: this.name,
       email_address: this.emailAddress,
-      company_member_token: this.token,
       personal_document: this.personalDocument,
-      company_id: this.companyId
+      password: this.password
     }
-  }
-
-  static fromEvent(event: EligibleCreatedEvent): Eligible {
-    return new Eligible(
-        event.name,
-        event.emailAddress,
-        event.token,
-        event.personalDocument
-    )
   }
 }

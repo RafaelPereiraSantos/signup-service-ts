@@ -9,10 +9,11 @@ export class AssociationService {
 
   // TODO move url to a dotenv
 
-  private readonly associationHost = "http://localhost:3000/post2"
+  private readonly associationHost = "http://localhost:3001/associate"
 
   async associate(eligible: Eligible) {
     const payload = this.preparePayload(eligible);
+    console.log(payload)
     const response = this.requestAssociation(payload);
     return response
   }
