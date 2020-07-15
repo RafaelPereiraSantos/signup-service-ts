@@ -42,12 +42,9 @@ export class AppController {
         'Required at least one parameter: email, personal document or token', HttpStatus.BAD_REQUEST
       );
     }
-    try {
-      const response = await this.associationService.associate(eligible);
-      return serialize(response)
-    } catch {
-      console.log(1111)
-    }
+
+    const response = await this.associationService.associate(eligible);
+    return serialize(response);
   }
 
   @HttpCode(HttpStatus.CREATED)
