@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { serialize } from "class-transformer";
 import fetch from 'node-fetch'
 
-import { EndUserRegister } from './endUserRegister';
+import { EndUserRegister } from './models/endUserRegister';
 
 @Injectable()
 export class RegistrationService {
@@ -11,10 +11,10 @@ export class RegistrationService {
 
   private readonly registrationHost = "http://localhost:3001/register"
 
-  async register(endUser: EndUserRegister) {
+  async register(endUser: EndUserRegister): Promise<Object> {
     const payload = this.preparePayload(endUser);
     console.log(payload)
-    const response = this.requestAssociation(payload);
+    const response = this.postRegister(payload);
     return response
   }
 
@@ -22,7 +22,7 @@ export class RegistrationService {
     return serialize(endUser.registerDataJson());
   }
 
-  private async requestAssociation(payload: String): Promise<Object> {
+  private async postRegister(payload: String): Promise<Object> {
     const response = await fetch(this.registrationHost, {
       method: 'POST',
       mode: 'cors',

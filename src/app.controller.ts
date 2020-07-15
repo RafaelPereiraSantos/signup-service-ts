@@ -12,12 +12,14 @@ import {
 } from '@nestjs/common';
 
 import { Request } from 'express';
-import { Expose, plainToClass, serialize } from "class-transformer";
+import { Expose, plainToClass, serialize, deserialize } from "class-transformer";
 
 import { AssociationService } from './associationService';
 import { RegistrationService } from './registrationService';
-import { Eligible } from './eligible';
-import { EndUserRegister } from './endUserRegister';
+import { Eligible } from './models/eligible';
+import { EndUserRegister } from './models/endUserRegister';
+import { EndUserResponse } from './models/endUserResponse';
+
 
 @Controller('/')
 export class AppController {
@@ -39,34 +41,38 @@ export class AppController {
       );
     }
     const response = await this.associationService.associate(eligible);
-    return JSON.stringify(response)
+    return serialize(response)
   }
 
   @HttpCode(HttpStatus.CREATED)
   @Post('register')
-  postRegister(@Body() eligibleParams: EndUserRegister): String {
-    const eligible = plainToClass(EndUserRegister, eligibleParams)
+  async postRegister(@Body() endUserParams: EndUserRegister): Promise<Object> {
+    const endUser = plainToClass(EndUserRegister, endUserParams)
 
-    if (eligible.noRegisterDataAvailable()) {
+    if (endUser.noRegisterDataAvailable()) {
       throw new HttpException(
         'Name, email and password are mandatory parameters!', HttpStatus.BAD_REQUEST
       );
     }
 
-    registerService.register()
+    const rawResponse = await this.registerService.register(endUser)
+    const response = new EndUserResponse(
+      rawResponse['id'],
+      rawResponse['name'],
+      rawResponse['email'],
+      rawResponse['personalDocument']
+    )
 
-    // TODO implement a register service
-
-    return serialize(eligible.registerDataJson());
+    return serialize(response.responseDataJson())
   }
 
   @Get('eligiblity')
   getEligiblity(
-    @Body() eligible: Eligible,
-    @Query('email') email
+    @Query('email') email,
+    @Query('token') token,
+    @Query('personal_document') personalDocument
   ): String {
-
-    // TODO implement a search service
+    const eligible = new Eligible('teste user', email, token, personalDocument);
 
     return serialize(eligible);
   }

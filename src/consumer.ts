@@ -2,8 +2,8 @@ import * as AmqpLib from "amqplib/callback_api";
 import { plainToClass } from "class-transformer";
 
 import { AssociationService } from './associationService';
-import { Eligible } from './eligible';
-import { EligibleCreatedEvent } from './eligibleCreatedEvent';
+import { Eligible } from './models/eligible';
+import { EligibleCreatedEvent } from './models/eligibleCreatedEvent';
 
 export class Consumer {
 
