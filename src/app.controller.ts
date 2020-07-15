@@ -43,7 +43,7 @@ export class AppController {
       );
     }
 
-    const response = await this.associationService.associate(eligible);
+    const response = await this.associationService.associate(eligible)
     return serialize(response);
   }
 
@@ -70,7 +70,6 @@ export class AppController {
   ): Promise<Object> {
     const eligible = new Eligible('teste user', email, token, personalDocument);
     const response = await this.eligibilitySearchService.search(eligible);
-
     return serialize(response);
   }
 }

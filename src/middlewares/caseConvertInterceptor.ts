@@ -5,8 +5,6 @@ import { map } from 'rxjs/operators';
 @Injectable()
 export class CaseConvertInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    console.log('Before...');
-
     return next
       .handle()
       .pipe(

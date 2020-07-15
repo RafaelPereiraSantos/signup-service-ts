@@ -12,14 +12,14 @@ export class EligibilitySearchService {
   // TODO move url to a dotenv
 
   private readonly eligibleHost = "http://localhost:3001/eligibles";
-  private readonly companyMemberHost = "http://localhost:3001/company-membersa";
+  private readonly companyMemberHost = "http://localhost:3001/company-members";
 
   async search(eligible: Eligible): Promise<Eligible> {
 
     // TODO handle possible errors in fetch
 
     const elibleResponse = this.searchInEligibleService(eligible);
-    const companyMemberResponse = this.searchInCompanyMemberService(eligible);
+    // const companyMemberResponse = this.searchInCompanyMemberService(eligible);
     return elibleResponse;
   }
 
@@ -76,8 +76,8 @@ export class EligibilitySearchService {
         'Content-Type': 'application/json'
       }
     });
-
-    return format(rawResponse.json());
+    const body = await rawResponse.json()
+    return format(body);
   }
 
   private handleResponse(response) {
