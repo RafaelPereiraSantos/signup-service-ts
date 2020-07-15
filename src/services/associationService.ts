@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { serialize } from "class-transformer";
 import fetch from 'node-fetch'
 
-import { Eligible } from './models/eligible';
+import { Eligible } from '../models/eligible';
 
 @Injectable()
 export class AssociationService {

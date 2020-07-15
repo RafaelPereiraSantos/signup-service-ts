@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { Consumer } from './consumer';
-import { CaseConvertInterceptor } from './caseConvertInterceptor';
+import { EligibleWorker } from './pubsub/eligibleWorker';
+import { CaseConvertInterceptor } from './middlewares/caseConvertInterceptor';
 
 // TODO create tests for all of this
 
@@ -11,8 +11,8 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalInterceptors(new CaseConvertInterceptor());
 
-  const consumer: Consumer = new Consumer();
-  consumer.up();
+  const worker: EligibleWorker = new EligibleWorker();
+  worker.up();
 
   // TODO move this port to a dotenv
 

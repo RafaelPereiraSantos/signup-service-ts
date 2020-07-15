@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { serialize } from "class-transformer";
 import fetch from 'node-fetch'
 
-import { EndUserRegister } from './models/endUserRegister';
+import { EndUserRegister } from '../models/endUserRegister';
+import { EndUserResponse } from '../models/endUserResponse';
 
 @Injectable()
 export class RegistrationService {
@@ -11,9 +12,8 @@ export class RegistrationService {
 
   private readonly registrationHost = "http://localhost:3001/register"
 
-  async register(endUser: EndUserRegister): Promise<Object> {
+  async register(endUser: EndUserRegister): Promise<EndUserResponse> {
     const payload = this.preparePayload(endUser);
-    console.log(payload)
     const response = this.postRegister(payload);
     return response
   }
@@ -22,8 +22,8 @@ export class RegistrationService {
     return serialize(endUser.registerDataJson());
   }
 
-  private async postRegister(payload: String): Promise<Object> {
-    const response = await fetch(this.registrationHost, {
+  private async postRegister(payload: String): Promise<EndUserResponse> {
+    const rawResponse = await fetch(this.registrationHost, {
       method: 'POST',
       mode: 'cors',
       credentials: 'same-origin',
@@ -33,7 +33,12 @@ export class RegistrationService {
       body: String(payload)
     });
 
-    return response.json()
+    return new EndUserResponse(
+      rawResponse['id'],
+      rawResponse['name'],
+      rawResponse['email'],
+      rawResponse['personalDocument']
+    );
   }
 
   private handleResponse(response) {

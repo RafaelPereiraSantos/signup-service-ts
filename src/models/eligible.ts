@@ -22,12 +22,14 @@ export class Eligible {
     name?: String,
     emailAddress?: String,
     token?: String,
-    personalDocument?: String
+    personalDocument?: String,
+    companyId?: number
   ) {
     this.name = name;
     this.emailAddress = emailAddress;
     this.token = token;
     this.personalDocument = personalDocument;
+    this.companyId = companyId;
   }
 
   noAssociationDataAvailable() {
@@ -42,6 +44,22 @@ export class Eligible {
       company_member_token: this.token,
       personal_document: this.personalDocument,
       company_id: this.companyId
+    }
+  }
+
+  eligibleDataJson(): Object {
+    return {
+      email_address: this.emailAddress,
+      employee_id: this.token,
+      document: this.personalDocument
+    }
+  }
+
+  companyMemberDataJson(): Object {
+    return {
+      email_address: this.emailAddress,
+      company_member_token: this.token,
+      personal_document: this.personalDocument
     }
   }
 

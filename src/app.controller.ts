@@ -14,8 +14,9 @@ import {
 import { Request } from 'express';
 import { Expose, plainToClass, serialize, deserialize } from "class-transformer";
 
-import { AssociationService } from './associationService';
-import { RegistrationService } from './registrationService';
+import { AssociationService } from './services/associationService';
+import { EligibilitySearchService } from './services/eligibilitySearchService';
+import { RegistrationService } from './services/registrationService';
 import { Eligible } from './models/eligible';
 import { EndUserRegister } from './models/endUserRegister';
 import { EndUserResponse } from './models/endUserResponse';
@@ -25,7 +26,8 @@ import { EndUserResponse } from './models/endUserResponse';
 export class AppController {
   constructor(
     private readonly associationService: AssociationService,
-    private readonly registerService: RegistrationService
+    private readonly registerService: RegistrationService,
+    private readonly eligibilitySearchService: EligibilitySearchService
   ) {}
 
   @HttpCode(HttpStatus.CREATED)
@@ -40,8 +42,12 @@ export class AppController {
         'Required at least one parameter: email, personal document or token', HttpStatus.BAD_REQUEST
       );
     }
-    const response = await this.associationService.associate(eligible);
-    return serialize(response)
+    try {
+      const response = await this.associationService.associate(eligible);
+      return serialize(response)
+    } catch {
+      console.log(1111)
+    }
   }
 
   @HttpCode(HttpStatus.CREATED)
@@ -55,25 +61,19 @@ export class AppController {
       );
     }
 
-    const rawResponse = await this.registerService.register(endUser)
-    const response = new EndUserResponse(
-      rawResponse['id'],
-      rawResponse['name'],
-      rawResponse['email'],
-      rawResponse['personalDocument']
-    )
-
-    return serialize(response.responseDataJson())
+    const response = await this.registerService.register(endUser);
+    return serialize(response.responseDataJson());
   }
 
   @Get('eligiblity')
-  getEligiblity(
+  async getEligiblity(
     @Query('email') email,
     @Query('token') token,
     @Query('personal_document') personalDocument
-  ): String {
+  ): Promise<Object> {
     const eligible = new Eligible('teste user', email, token, personalDocument);
+    const response = await this.eligibilitySearchService.search(eligible);
 
-    return serialize(eligible);
+    return serialize(response);
   }
 }
